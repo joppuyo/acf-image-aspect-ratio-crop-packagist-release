@@ -12,22 +12,30 @@ The cropped image variants are hidden by default in the media browser and on the
 
 ## Cropping an image to 16:9 aspect ratio
 
-![Screenshot of cropping an image](assets/images/screenshot-1.jpg)
+![Screenshot of cropping an image](assets/images/screenshot-1.jpg?v=1552838494)
 
 ## Cropping in progress
 
-![Screenshot of cropping in progress](assets/images/screenshot-2.jpg)
+![Screenshot of cropping in progress](assets/images/screenshot-2.jpg?v=1552838494)
 
 
 ## Option to re-crop the image after upload
 
-![Screenshot of the image field](assets/images/screenshot-3.png)
+![Screenshot of the image field](assets/images/screenshot-3.png?v=1552838494)
 
 ## Frequently Asked Questions
 
 ### Can I access metadata in the original image from a cropped image? 
 
 Yes, the original image data such as is saved under `original_image` key in the returned ACF array. You can access data such as alt text, description and title this way.
+
+### How is this different from the other plugin?
+
+[Advanced Custom Fields: Image Crop Add-on](https://wordpress.org/plugins/acf-image-crop-add-on/) is based on exact image dimensions (like 640x480). This plugin uses an aspect ratio such as 4:3 instead. Using an aspect ratio is is more convenient when working with responsive images since you care about the aspect ratio more than pixel dimensions.
+
+Of course, nothing will stop you from using an aspect ratio like 1200:630 which is similar to a pixel amount with this plugin, if you want.
+
+Also, as of 2019, the other plugin is not actively maintained anymore and does not work well with latest ACF versions. I try to maintain this plugin as best as I can when new versions of ACF and WordPress come out.
 
 ## Thanks
 
