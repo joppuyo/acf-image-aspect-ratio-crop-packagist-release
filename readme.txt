@@ -45,7 +45,8 @@ such as alt text, description and title this way.
 == Screenshots ==
 
 1. Cropping an image to 16:9 aspect ratio
-2. Option to re-crop the image after upload
+2. Cropping in progress
+3. Option to re-crop the image after upload
 
 == Changelog ==
 
@@ -56,7 +57,7 @@ such as alt text, description and title this way.
 * Feature: There is now a progress indicator (spinner) displayed while the image is being cropped
 * Feature: If an error occurs while cropping an image, the error message is displayed inline in the modal instead of
   a browser alert window
-* Feature: Improved styles for the cropped
+* Feature: Improved styles for the cropper
 * Feature: Modern and improved build process with webpack
 * Feature: Make it possible to localize UI texts
 
