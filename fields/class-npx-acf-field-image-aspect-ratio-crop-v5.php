@@ -335,6 +335,14 @@ class npx_acf_field_image_aspect_ratio_crop extends acf_field
                 true
             );
 
+            $coordinates = get_post_meta(
+                $field['value'],
+                'acf_image_aspect_ratio_crop_coordinates',
+                true
+            );
+
+            $div['data-coordinates'] = $coordinates;
+
             // url exists
             if ($url) {
                 $url = $url[0];
@@ -454,6 +462,7 @@ class npx_acf_field_image_aspect_ratio_crop extends acf_field
             'crop' => __('Crop', 'acf-image-aspect-ratio-crop'),
             'cancel' => __('Cancel', 'acf-image-aspect-ratio-crop'),
             'modal_title' => __('Crop image', 'acf-image-aspect-ratio-crop'),
+            'reset' => __('Reset crop', 'acf-image-aspect-ratio-crop'),
         ];
         $settings_array = [
             'modal_type' => $this->settings['user_settings']['modal_type'],

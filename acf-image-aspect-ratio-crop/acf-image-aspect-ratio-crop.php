@@ -4,7 +4,7 @@
 Plugin Name: Advanced Custom Fields: Image Aspect Ratio Crop
 Plugin URI: https://github.com/joppuyo/acf-image-aspect-ratio-crop
 Description: ACF field that allows user to crop image to a specific aspect ratio
-Version: 2.0.3
+Version: 2.1.0
 Author: Johannes Siipola
 Author URI: https://siipo.la
 License: GPLv2 or later
@@ -224,10 +224,49 @@ class npx_acf_plugin_image_aspect_ratio_crop
                 $data['id'],
                 true
             );
+            add_post_meta(
+                $attachment_id,
+                'acf_image_aspect_ratio_crop_coordinates',
+                [
+                    'x' => $data['x'],
+                    'y' => $data['y'],
+                    'width' => $data['width'],
+                    'height' => $data['height']
+                ],
+                true
+            );
 
             $this->cleanup();
             wp_send_json(['id' => $attachment_id]);
             wp_die();
+        });
+
+        // Enable Media Replace compat: if file is replaced using Enable Media Replace, wipe the coordinate data
+        add_filter('wp_handle_upload', function ($data) {
+            $id = attachment_url_to_postid($data['url']);
+            if ($id !== 0) {
+                $posts = get_posts([
+                    'post_type' => 'attachment',
+                    'posts_per_page' => -1,
+                    'meta_query' => [
+                        [
+                            'key'     => 'acf_image_aspect_ratio_crop_original_image_id',
+                            'value'   => $id,
+                            'compare' => '=',
+                        ],
+                        [
+                            'key'     => 'acf_image_aspect_ratio_crop_coordinates',
+                            'compare' => 'EXISTS',
+                        ],
+                    ],
+                ]);
+                if (!empty($posts)) {
+                    foreach ($posts as $post) {
+                        delete_post_meta($post->ID, 'acf_image_aspect_ratio_crop_coordinates');
+                    }
+                }
+            }
+            return $data;
         });
 
         // Hide cropped images in media library grid view
