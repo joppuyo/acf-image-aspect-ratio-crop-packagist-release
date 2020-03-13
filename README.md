@@ -1,8 +1,9 @@
 # ACF Image Aspect Ratio Crop Field
 
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fjoppuyo%2Facf-image-aspect-ratio-crop%2Fbadge&style=flat)](https://actions-badge.atrox.dev/joppuyo/acf-image-aspect-ratio-crop/goto)
-[![WordPress plugin](https://img.shields.io/wordpress/plugin/v/acf-image-aspect-ratio-crop.svg)](https://wordpress.org/plugins/acf-image-aspect-ratio-crop/)
-[![Active installs](https://img.shields.io/wordpress/plugin/installs/acf-image-aspect-ratio-crop.svg?style=flat)](https://wordpress.org/plugins/acf-image-aspect-ratio-crop/advanced/)
+[![Build Status](https://img.shields.io/github/workflow/status/joppuyo/acf-image-aspect-ratio-crop/PHP%20Composer?logo=github)](https://github.com/joppuyo/acf-image-aspect-ratio-crop/actions)
+[![Test status](https://img.shields.io/github/workflow/status/joppuyo/acf-image-aspect-ratio-crop/Test?label=tests&logo=github)](https://github.com/joppuyo/acf-image-aspect-ratio-crop/actions)
+[![WordPress plugin](https://img.shields.io/wordpress/plugin/v/acf-image-aspect-ratio-crop?logo=wordpress)](https://wordpress.org/plugins/acf-image-aspect-ratio-crop/)
+[![Active installs](https://img.shields.io/wordpress/plugin/installs/acf-image-aspect-ratio-crop.svg?logo=wordpress)](https://wordpress.org/plugins/acf-image-aspect-ratio-crop/advanced/)
 
 A field for Advanced Custom Fields that forces the user to crop their image to specific aspect ratio after uploading. This is especially useful in responsive image use cases.
 
@@ -28,6 +29,10 @@ The cropped image variants are hidden by default in the media browser and on the
 You can download the plugin from the [WordPress plugin directory](https://wordpress.org/plugins/acf-image-aspect-ratio-crop/), or download the latest release as a zip file from [GitHub releases](https://github.com/joppuyo/acf-image-aspect-ratio-crop/releases).
 
 ## Frequently Asked Questions
+
+##  Can I use this plugin with a front-end acf_form?
+
+Unfortunately this is not supported right now since the plugin requires `upload_files` capability to access the media library. If user does not have this permission, a basic upload dialog will be displayed without a cropper. You can enable cropping by assigning  `upload_files`  capability to the user role but this means that users are able to access the media library like admin users. I will look into implementing front-end form cropping without needing this capability in a future release of this plugin.
 
 ### Can I access metadata in the original image from a cropped image? 
 

@@ -37,6 +37,10 @@ Special thanks to Anders Thorborg for [ACF Image Crop](https://github.com/anders
 
 == Frequently Asked Questions ==
 
+= Can I use this plugin with a front-end acf_form? =
+
+Unfortunately this is not supported right now since the plugin requires `upload_files` capability to access the media library. If user does not have this permission, a basic upload dialog will be displayed without a cropper. You can enable cropping by assigning  `upload_files`  capability to the user role but this means that users are able to access the media library like admin users. I will look into implementing front-end form cropping without needing this capability in a future release of this plugin.
+
 = Can I access metadata in the original image from a cropped image? =
 
 Yes, the original image data is saved under `original_image` key in the returned ACF array. You can access data such as alt text, description and title this way.
@@ -61,15 +65,22 @@ Also, as of 2019, the other plugin is not actively maintained anymore and does n
 
 == Changelog ==
 
+= 3.1.12 =
+* Fix: Improved compatibility with WordPress 5.3 large image handing
+* Fix: Allow closing crop modal with escape key
+* Change: change file name suffix aspect ratio from x to dash because this caused some issues with WP 5.3.
+  Now file my-image-aspect-ratio-16x9.jpeg will be called my-image-aspect-ratio-16-9.jpeg instead
+* Fix: Fix problem where "delete unused cropped images" did not work properly with nested fields
+
 = 3.1.11 =
-* Remove ramsey/uuid dependency in favor of using native wp function since the dependency caused issues in some server
-  configurations
+* Fix: Remove ramsey/uuid dependency in favor of using native wp function since the dependency caused issues in some
+  server configurations
 
 = 3.1.10 =
-* Fix issue where image was not visible in backed due to malformed URL
+* Fix: Fix issue where image was not visible in backed due to malformed URL
 
 = 3.1.8 =
-* Deployment fix
+* Fix: Deployment fix
 
 = 3.1.0 =
 * Feature: Add new beta feature: delete unused crop images. You can enable this by going to

@@ -4,13 +4,13 @@
 Plugin Name: Advanced Custom Fields: Image Aspect Ratio Crop
 Plugin URI: https://github.com/joppuyo/acf-image-aspect-ratio-crop
 Description: ACF field that allows user to crop image to a specific aspect ratio
-Version: 3.1.11
+Version: 3.1.12
 Author: Johannes Siipola
 Author URI: https://siipo.la
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: acf-image-aspect-ratio-crop
-Stable Tag: 3.1.11
+Stable Tag: 3.1.12
 */
 
 // exit if accessed directly
@@ -141,12 +141,7 @@ class npx_acf_plugin_image_aspect_ratio_crop
 
             $preserve_ids = [];
 
-            foreach ($fields as $key => $field) {
-                $definition = get_field_object($key);
-                if (!empty($field) && $definition['type'] === 'image_aspect_ratio_crop') {
-                    array_push($preserve_ids, $field);
-                }
-            }
+            $this->check_fields($fields, $preserve_ids);
 
             $post_attachment_ids = array_map(function ($attachment){
                 return $attachment->ID;
@@ -196,8 +191,33 @@ class npx_acf_plugin_image_aspect_ratio_crop
             $backup_file = implode('.', $parts) . '.bak.' . $extension;
 
             $image = null;
+            $scaled_data = null;
+            if (
+                file_exists($file) &&
+                function_exists('wp_get_original_image_path') &&
+                wp_get_original_image_path($data['id']) &&
+                wp_get_original_image_path($data['id']) !== $file
+            ) {
+                // Handle the new asinine feature in WP 5.3 which resizes images without asking the user. We want the
+                // original image so we do original_image -> crop instead or original_image -> resized_image -> crop
+                $resized_image = wp_get_image_editor($file);
+                $image = wp_get_image_editor(wp_get_original_image_path($data['id']));
+                $resized_width = $resized_image->get_size()['width'];
+                $original_width = $image->get_size()['width'];
 
-            if (file_exists($backup_file)) {
+                // Get the scale
+                $scale = $original_width / $resized_width;
+
+                // Clone data array
+                $scaled_data = $data;
+
+                // Scale crop coordinates to fit larger image
+                $scaled_data['x'] = floor($data['x'] * $scale);
+                $scaled_data['y'] = floor($data['y'] * $scale);
+                $scaled_data['width'] = floor($data['width'] * $scale);
+                $scaled_data['height'] =  floor($data['height'] * $scale);
+
+            } else if (file_exists($backup_file)) {
                 $image = wp_get_image_editor($backup_file);
             } else if (file_exists($file)) {
                 $image = wp_get_image_editor($file);
@@ -227,12 +247,8 @@ class npx_acf_plugin_image_aspect_ratio_crop
                 wp_die();
             }
 
-            $image->crop(
-                $data['x'],
-                $data['y'],
-                $data['width'],
-                $data['height']
-            );
+            // Use scaled coordinates if we have those
+            $this->crop($image, $scaled_data ? $scaled_data : $data);
 
             // Retrieve original filename and seperate it from its file extension
             $original_file_name = explode(
@@ -248,7 +264,7 @@ class npx_acf_plugin_image_aspect_ratio_crop
                 implode('.', $original_file_name) .
                 '-aspect-ratio-' .
                 $data['aspectRatioWidth'] .
-                'x' .
+                '-' .
                 $data['aspectRatioHeight'] .
                 '.' .
                 $original_file_extension;
@@ -596,6 +612,42 @@ class npx_acf_plugin_image_aspect_ratio_crop
     {
         if (defined('WP_DEBUG') && WP_DEBUG === true) {
             error_log(print_r($message, true));
+        }
+    }
+
+    private function crop(WP_Image_Editor $image, $data)
+    {
+        $image->crop(
+            $data['x'],
+            $data['y'],
+            $data['width'],
+            $data['height']
+        );
+    }
+
+    public function check_fields($fields, &$preserve_ids) {
+
+        $this->debug($preserve_ids);
+
+        foreach ($fields as $key => $field) {
+
+            if(is_array($field)) {
+                $this->check_fields($field, $preserve_ids);
+            }
+
+            // This is kinda of a hack but nested fields are named like field_59416ac78945f_field_59217cf6eb710 in the
+            // POST request and we are only interested in the last part so we just use a regex here to chop off the
+            // last part
+            preg_match_all('/field_[a-z0-9]+/', $key, $matches);
+
+            if (!empty($matches[0])) {
+                $last = array_values(array_slice($matches[0], -1))[0];
+                $definition = get_field_object($last);
+                if (!empty($field) && $definition['type'] === 'image_aspect_ratio_crop') {
+                    array_push($preserve_ids, $field);
+                }
+            }
+
         }
     }
 }
