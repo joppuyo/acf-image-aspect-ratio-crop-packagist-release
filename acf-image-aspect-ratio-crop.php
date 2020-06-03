@@ -168,6 +168,7 @@ class npx_acf_plugin_image_aspect_ratio_crop
             $data = json_decode($post['data'], true);
 
             $image_data = wp_get_attachment_metadata($data['id']);
+            $image_data = apply_filters('acf_image_aspect_ratio_crop_image_data', $image_data, $data['id']);
 
             // If the difference between the images is less than half a percentage, use the original image
             // prettier-ignore
@@ -228,7 +229,9 @@ class npx_acf_plugin_image_aspect_ratio_crop
                 $this->temp_path = $temp_directory . $temp_name;
                 try {
                     $guzzle = new \GuzzleHttp\Client();
-                    $fetched_image = $guzzle->get(wp_get_attachment_url($data['id']));
+                    $image_url = wp_get_attachment_url($data['id']);
+                    $image_url = apply_filters('acf_image_aspect_ratio_crop_attachment_url', $image_url, $data['id']);
+                    $fetched_image = $guzzle->get($image_url);
                     $result = @file_put_contents($this->temp_path, $fetched_image->getBody());
                     if ($result === false) {
                         throw new Exception('Failed to save image');
