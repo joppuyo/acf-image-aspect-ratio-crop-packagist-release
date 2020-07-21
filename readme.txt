@@ -7,6 +7,7 @@ Requires PHP: 5.5
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Stable Tag: 3.3.2
 
 ACF field that allows user to crop image to a specific aspect ratio or pixel size
 
@@ -89,8 +90,12 @@ The other plugin is not actively maintained and does not work well with latest A
 
 == Changelog ==
 
+= 3.3.2 =
+* Fix: Fixed issue where pixel size image is not scaled when it matches the aspect ratio
+* Fix: Fixed file name when using free crop, use actual file dimensions instead of 0x0
+
 = 3.3.1 =
-* Fix: Fix issue where hidden required field prevented saving custom fields
+* Fix: Fixed issue where hidden required field prevented saving custom fields
 * Fix: Remove duplicated field hint
 
 = 3.3.0 =
@@ -106,8 +111,7 @@ The other plugin is not actively maintained and does not work well with latest A
 = 3.1.12 =
 * Fix: Improved compatibility with WordPress 5.3 large image handing
 * Fix: Allow closing crop modal with escape key
-* Change: change file name suffix aspect ratio from x to dash because this caused some issues with WP 5.3.
-  Now file my-image-aspect-ratio-16x9.jpeg will be called my-image-aspect-ratio-16-9.jpeg instead
+* Change: change file name suffix aspect ratio from x to dash because this caused some issues with WP 5.3. Now file my-image-aspect-ratio-16x9.jpeg will be called my-image-aspect-ratio-16-9.jpeg instead
 * Fix: Fix problem where "delete unused cropped images" did not work properly with nested fields
 
 = 3.1.11 =

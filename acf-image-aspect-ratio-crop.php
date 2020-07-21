@@ -4,13 +4,12 @@
 Plugin Name: Advanced Custom Fields: Image Aspect Ratio Crop
 Plugin URI: https://github.com/joppuyo/acf-image-aspect-ratio-crop
 Description: ACF field that allows user to crop image to a specific aspect ratio or pixel size
-Version: 3.3.1
+Version: 3.3.2
 Author: Johannes Siipola
 Author URI: https://siipo.la
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: acf-image-aspect-ratio-crop
-Stable Tag: 3.3.1
 */
 
 // exit if accessed directly
@@ -172,7 +171,8 @@ class npx_acf_plugin_image_aspect_ratio_crop
             // If the difference between the images is less than half a percentage, use the original image
             // prettier-ignore
             if ($image_data['height'] - $data['height'] < $image_data['height'] * 0.005 &&
-                $image_data['width'] - $data['width'] < $image_data['width'] * 0.005
+                $image_data['width'] - $data['width'] < $image_data['width'] * 0.005 &&
+                $data['cropType'] !== 'pixel_size'
             ) {
                 wp_send_json(['id' => $data['id']]);
                 wp_die();
@@ -263,13 +263,23 @@ class npx_acf_plugin_image_aspect_ratio_crop
             // Retrieve and remove file extension from array
             $original_file_extension = array_pop($original_file_name);
 
+            $width = $data['aspectRatioWidth'];
+            $height = $data['aspectRatioHeight'];
+
+            $this->debug($data['cropType']);
+
+            if ($data['cropType'] === 'free_crop') {
+                $width = $data['width'];
+                $height = $data['height'];
+            }
+
             // Generate new base filename
             $target_file_name =
                 implode('.', $original_file_name) .
                 '-aspect-ratio-' .
-                $data['aspectRatioWidth'] .
+                $width .
                 '-' .
-                $data['aspectRatioHeight'] .
+                $height .
                 '.' .
                 $original_file_extension;
 
