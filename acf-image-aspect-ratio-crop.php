@@ -4,7 +4,7 @@
 Plugin Name: Advanced Custom Fields: Image Aspect Ratio Crop
 Plugin URI: https://github.com/joppuyo/acf-image-aspect-ratio-crop
 Description: ACF field that allows user to crop image to a specific aspect ratio or pixel size
-Version: 3.3.2
+Version: 3.4.0
 Author: Johannes Siipola
 Author URI: https://siipo.la
 License: GPLv2 or later
@@ -166,7 +166,7 @@ class npx_acf_plugin_image_aspect_ratio_crop
 
             $data = json_decode($post['data'], true);
 
-            $image_data = wp_get_attachment_metadata($data['id']);
+            $image_data = apply_filters('aiarc_image_data', wp_get_attachment_metadata($data['id']), $data['id']);
 
             // If the difference between the images is less than half a percentage, use the original image
             // prettier-ignore
@@ -180,7 +180,7 @@ class npx_acf_plugin_image_aspect_ratio_crop
 
             do_action('aiarc_pre_customize_upload_dir');
 
-            $media_dir = wp_upload_dir();
+            $media_dir = apply_filters('aiarc_upload_dir', wp_upload_dir(), $data['id']);
 
             do_action('aiarc_after_customize_upload_dir');
 
@@ -227,8 +227,11 @@ class npx_acf_plugin_image_aspect_ratio_crop
                 $temp_directory = get_temp_dir();
                 $this->temp_path = $temp_directory . $temp_name;
                 try {
-                    $guzzle = new \GuzzleHttp\Client();
-                    $fetched_image = $guzzle->get(wp_get_attachment_url($data['id']));
+                    $guzzle = new \GuzzleHttp\Client(apply_filters('aiarc_client_options', [], $data['id']));
+                    $fetched_image = $guzzle->get(
+                        apply_filters('aiarc_request_url', wp_get_attachment_url($data['id']), $data['id']),
+                        apply_filters('aiarc_request_options', [], $data['id'])
+                    );
                     $result = @file_put_contents($this->temp_path, $fetched_image->getBody());
                     if ($result === false) {
                         throw new Exception('Failed to save image');
@@ -243,6 +246,7 @@ class npx_acf_plugin_image_aspect_ratio_crop
 
             if (is_wp_error($image)) {
                 $this->cleanup();
+                $this->debug($image);
                 wp_send_json('Failed to open image', 500);
                 wp_die();
             }
@@ -470,6 +474,35 @@ class npx_acf_plugin_image_aspect_ratio_crop
         }
 
         add_action('aiarc_delete_unused_attachments', [$this, 'delete_unused_attachments']);
+
+        add_filter('wpgraphql_acf_supported_fields', function ($supported_fields) {
+            array_push($supported_fields, 'image_aspect_ratio_crop');
+            return $supported_fields;
+        });
+
+        add_filter('wpgraphql_acf_register_graphql_field', function ($field_config, $type_name, $field_name, $config) {
+
+            // How to add new WPGraphQL fields is super undocumented, I used this code as a base
+            // https://github.com/wp-graphql/wp-graphql/issues/214#issuecomment-653141685
+
+            $acf_field = isset($config['acf_field']) ? $config['acf_field'] : null;
+            $acf_type = isset($acf_field['type']) ? $acf_field['type'] : null;
+
+            $resolve = $field_config['resolve'];
+
+            if ($acf_type == "image_aspect_ratio_crop") {
+                $field_config = [
+                    'type' => 'MediaItem',
+                    'resolve' => function ($root, $args, $context, $info) use ($resolve) {
+                        $value = $resolve($root, $args, $context, $info);
+                        return WPGraphQL\Data\DataSource::resolve_post_object((int)$value, $context);
+                    }
+                ];
+            }
+
+            return $field_config;
+        }, 10, 4);
+
     }
 
     /*
