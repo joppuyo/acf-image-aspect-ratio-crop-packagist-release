@@ -1,3 +1,7 @@
+## The Packagist release of this plugin has been discontinued.
+
+Please use [WordPress Packagist](https://wpackagist.org/) instead and require `wpackagist-plugin/acf-image-aspect-ratio-crop`
+
 # ACF Image Aspect Ratio Crop Field
 
 [![Build Status](https://img.shields.io/github/workflow/status/joppuyo/acf-image-aspect-ratio-crop/PHP%20Composer?logo=github)](https://github.com/joppuyo/acf-image-aspect-ratio-crop/actions)
