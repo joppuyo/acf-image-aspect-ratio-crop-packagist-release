@@ -7,7 +7,7 @@
 
 ## Important notice: The Packagist release of this plugin has been discontinued.
 
-Please use [WordPress Packagist](https://wpackagist.org/) instead and require `wpackagist-plugin/acf-image-aspect-ratio-crop`
+**Please use [WordPress Packagist](https://wpackagist.org/) instead and require `wpackagist-plugin/acf-image-aspect-ratio-crop`**
 
 A field for Advanced Custom Fields that forces the user to crop their image to specific aspect ratio or pixel size after uploading. Using an aspect ratio is especially useful in responsive image use cases.
 
