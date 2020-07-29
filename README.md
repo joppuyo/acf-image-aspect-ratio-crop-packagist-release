@@ -1,4 +1,4 @@
-## The Packagist release of this plugin has been discontinued.
+# The Packagist release of this plugin has been discontinued.
 
 Please use [WordPress Packagist](https://wpackagist.org/) instead and require `wpackagist-plugin/acf-image-aspect-ratio-crop`
 
